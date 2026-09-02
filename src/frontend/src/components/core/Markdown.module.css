@@ -58,6 +58,19 @@
   text-decoration: underline;
 }
 
+:global(.sourceReference) {
+  display: inline-block;
+  margin: 0 2px;
+  padding: 1px 6px;
+  border: 1px solid #b7dcf5;
+  border-radius: 4px;
+  background-color: #eaf6ff;
+  color: #1769aa;
+  font-size: 0.9em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .inlineCode {
   padding: 0.2em 0.4em;
   margin: 0;

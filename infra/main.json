@@ -169,21 +169,21 @@
     },
     "chatModelName": {
       "type": "string",
-      "defaultValue": "gpt-4o-mini",
+      "defaultValue": "gpt-5-mini",
       "metadata": {
         "description": "Name of the chat model to deploy"
       }
     },
     "chatDeploymentName": {
       "type": "string",
-      "defaultValue": "gpt-4o-mini",
+      "defaultValue": "gpt-5-mini",
       "metadata": {
         "description": "Name of the model deployment"
       }
     },
     "chatModelVersion": {
       "type": "string",
-      "defaultValue": "2024-07-18",
+      "defaultValue": "2025-08-07",
       "metadata": {
         "description": "Version of the chat model to deploy"
       }

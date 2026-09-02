@@ -18,7 +18,6 @@ const DeleteIcon = bundleIcon(DeleteFilled, DeleteRegular);
 
 export function AssistantMessage({
   message,
-  agentLogo,
   loadingState,
   agentName,
   showUsageInfo,
@@ -27,7 +26,7 @@ export function AssistantMessage({
   const hasAnnotations = message.annotations && message.annotations.length > 0;
   const references = hasAnnotations
     ? message.annotations?.map((annotation, index) => (
-        <div key={index} className="reference-item">
+        <div key={index} className={styles.referenceItem}>
           {annotation.text || annotation.file_name}
         </div>
       ))
@@ -50,26 +49,30 @@ export function AssistantMessage({
           )}
         </span>
       }
-      avatar={<AgentIcon alt="" iconName={agentLogo} />}
+      avatar={<AgentIcon alt="" iconName="qarar-ai-brandmark.png" />}
       className={styles.copilotChatMessage}
-      disclaimer={<span>AI-generated content may be incorrect</span>}
+      disclaimer={<span>Market & Decision Intelligence</span>}
+      style={{ fontFamily: "'Montserrat', 'Segoe UI', sans-serif" }}
       footnote={
         <>
           {hasAnnotations && (
-            <ReferenceList
-              maxVisibleReferences={3}
-              minVisibleReferences={2}
-              showLessButton={
-                <ReferenceOverflowButton>Show Less</ReferenceOverflowButton>
-              }
-              showMoreButton={
-                <ReferenceOverflowButton
-                  text={(overflowCount) => `+${overflowCount.toString()}`}
-                />
-              }
-            >
-              {references}
-            </ReferenceList>
+            <div className={styles.referenceListRoot}>
+              <ReferenceList
+                className={styles.referenceList}
+                maxVisibleReferences={3}
+                minVisibleReferences={2}
+                showLessButton={
+                  <ReferenceOverflowButton>Show Less</ReferenceOverflowButton>
+                }
+                showMoreButton={
+                  <ReferenceOverflowButton
+                    text={(overflowCount) => `+${overflowCount.toString()}`}
+                  />
+                }
+              >
+                {references}
+              </ReferenceList>
+            </div>
           )}
           {showUsageInfo && message.usageInfo && (
             <UsageInfo info={message.usageInfo} duration={message.duration} />
@@ -77,7 +80,7 @@ export function AssistantMessage({
         </>
       }
       loadingState={loadingState}
-      name={agentName ?? "Bot"}
+      name={<span className={styles.assistantName}>{agentName ?? "QARAR AI"}</span>}
     >
       <Suspense fallback={<Spinner size="small" />}>
         <Markdown content={message.content} />

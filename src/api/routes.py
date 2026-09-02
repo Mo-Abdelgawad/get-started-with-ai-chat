@@ -10,8 +10,7 @@ import fastapi
 from fastapi import Request, Depends
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
-from azure.ai.inference.prompts import PromptTemplate
-from azure.ai.inference.aio import ChatCompletionsClient
+from openai import AsyncAzureOpenAI
 
 from .util import get_logger, ChatRequest
 from .search_index_manager import SearchIndexManager
@@ -60,7 +59,7 @@ templates = Jinja2Templates(directory="api/templates")
 
 
 # Accessors to get app state
-def get_chat_client(request: Request) -> ChatCompletionsClient:
+def get_chat_client(request: Request) -> AsyncAzureOpenAI:
     return request.app.state.chat
 
 
@@ -85,7 +84,7 @@ async def index_name(request: Request, _ = auth_dependency):
 @router.post("/chat")
 async def chat_stream_handler(
     chat_request: ChatRequest,
-    chat_client: ChatCompletionsClient = Depends(get_chat_client),
+    chat_client: AsyncAzureOpenAI = Depends(get_chat_client),
     model_deployment_name: str = Depends(get_chat_model),
     search_index_manager: SearchIndexManager = Depends(get_search_index_namager),
     _ = auth_dependency
@@ -100,24 +99,46 @@ async def chat_stream_handler(
         raise Exception("Chat client not initialized")
 
     async def response_stream():
-        messages = [{"role": message.role, "content": message.content} for message in chat_request.messages]
+        messages = [{
+            "role": "user",
+            "content": chat_request.messages[-1].content
+        }]
 
-        prompt_messages = PromptTemplate.from_string('You are a helpful assistant').create_messages()
+        prompt_messages = [{"role": "system", "content": "You are a helpful assistant."}]
         # Use RAG model, only if we were provided index and we have found a context there.
         if search_index_manager is not None:
             context = await search_index_manager.search(chat_request)
             if context:
-                prompt_messages = PromptTemplate.from_string(
-                    'You are a helpful assistant that answers some questions '
-                    'with the help of some context data.\n\nHere is '
-                    'the context data:\n\n{{context}}').create_messages(data=dict(context=context))
+                prompt_messages = [{
+                    "role": "system",
+                    "content": '''You are Qarar, a decision-intelligence assistant.
+
+Answer the user's question ONLY using the context provided below.
+
+Rules:
+- Answer directly from the context; do not ask a clarifying question when a direct answer is already supported by the evidence.
+- Do not add facts that are not explicitly supported by the context.
+- Do not guess or infer locations, numbers, organizations, or recommendations beyond the context.
+- If the context does not contain enough information, say: "The available data does not provide enough information to answer this confidently."
+- When stating a conclusion, explain which evidence in the context supports it.
+- Cite the supporting source using the exact [Source: filename] provided in the context.
+- Every material factual claim must be supported by a cited source.
+- Never invent a source name.
+- Keep the answer concise and grounded in the retrieved material.
+- Treat the context as the authoritative source.
+
+Context:
+''' + context,
+                }]
                 logger.info(f"{prompt_messages=}")
             else:
                 logger.info("Unable to find the relevant information in the index for the request.")
         try:
             accumulated_message = ""
-            chat_coroutine = await chat_client.complete(
-                model=model_deployment_name, messages=prompt_messages + messages, stream=True
+            chat_coroutine = await chat_client.chat.completions.create(
+                model=model_deployment_name,
+                messages=prompt_messages + messages,
+                stream=True,
             )
             async for event in chat_coroutine:
                 if event.choices:

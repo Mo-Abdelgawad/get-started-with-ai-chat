@@ -87,6 +87,85 @@ class TestSearchIndexManager(unittest.IsolatedAsyncioTestCase):
             mock_aenter.get_index.assert_called_once()
             mock_aenter.create_index.assert_not_called()
 
+    async def test_get_or_create_recreates_stale_index(self):
+        mock_ix_client = AsyncMock()
+        mock_aenter = AsyncMock()
+        stale_index = Mock()
+        stale_index.fields = [
+            Mock(name='embedId'),
+            Mock(name='embedding'),
+            Mock(name='token'),
+            Mock(name='source_file'),
+        ]
+        mock_aenter.get_index.return_value = stale_index
+
+        with patch('search_index_manager.SearchIndexClient', return_value=mock_ix_client):
+            mock_ix_client.__aenter__.return_value = mock_aenter
+            await SearchIndexManager.get_or_create_index(
+                endpoint=self.search_endpoint,
+                credential=AsyncMock(),
+                index_name=self.index_name,
+                dimensions=100,
+            )
+
+            mock_aenter.delete_index.assert_called_once_with(self.index_name)
+            mock_aenter.create_index.assert_called_once()
+
+    async def test_get_or_create_recreates_when_required_metadata_fields_missing(self):
+        mock_ix_client = AsyncMock()
+        mock_aenter = AsyncMock()
+        stale_index = Mock()
+        stale_index.fields = [
+            Mock(name='embedId'),
+            Mock(name='embedding'),
+            Mock(name='token'),
+            Mock(name='source_file'),
+            Mock(name='language'),
+        ]
+        mock_aenter.get_index.return_value = stale_index
+
+        with patch('search_index_manager.SearchIndexClient', return_value=mock_ix_client):
+            mock_ix_client.__aenter__.return_value = mock_aenter
+            await SearchIndexManager.get_or_create_index(
+                endpoint=self.search_endpoint,
+                credential=AsyncMock(),
+                index_name=self.index_name,
+                dimensions=100,
+                metadata_fields=['sector', 'region', 'document_type', 'source_owner', 'language'],
+            )
+
+            mock_aenter.delete_index.assert_called_once_with(self.index_name)
+            mock_aenter.create_index.assert_called_once()
+
+    async def test_get_or_create_recreates_when_required_metadata_fields_are_not_filterable(self):
+        mock_ix_client = AsyncMock()
+        mock_aenter = AsyncMock()
+        stale_index = Mock()
+        stale_field = Mock()
+        stale_field.name = 'sector'
+        stale_field.filterable = False
+        stale_index.fields = [
+            Mock(name='embedId'),
+            Mock(name='embedding'),
+            Mock(name='token'),
+            Mock(name='source_file'),
+            stale_field,
+        ]
+        mock_aenter.get_index.return_value = stale_index
+
+        with patch('search_index_manager.SearchIndexClient', return_value=mock_ix_client):
+            mock_ix_client.__aenter__.return_value = mock_aenter
+            await SearchIndexManager.get_or_create_index(
+                endpoint=self.search_endpoint,
+                credential=AsyncMock(),
+                index_name=self.index_name,
+                dimensions=100,
+                metadata_fields=['sector'],
+            )
+
+            mock_aenter.delete_index.assert_called_once_with(self.index_name)
+            mock_aenter.create_index.assert_called_once()
+
     async def test_create_index_or_false_mock(self):
         mock_ix_client = AsyncMock()
         mock_aenter = AsyncMock()

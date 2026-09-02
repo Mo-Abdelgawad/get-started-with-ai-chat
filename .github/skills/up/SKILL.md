@@ -209,7 +209,7 @@ Show the resolved region to the user for confirmation before proceeding.
 
 Before provisioning, verify the default chat model has sufficient quota in the selected region.
 
-**Default model:** `gpt-4o-mini` | **SKU:** `GlobalStandard` | **Required capacity:** 80
+**Default model:** `gpt-5-mini` | **SKU:** `GlobalStandard` | **Required capacity:** 80
 
 #### 5a. Query quota and model availability
 
@@ -223,7 +223,7 @@ Cache both `$usage` and `$modelList` for potential reuse.
 #### 5b. Check default chat model quota
 
 ```powershell
-$defaultUsageName = "OpenAI.GlobalStandard.gpt-4o-mini"
+$defaultUsageName = "OpenAI.GlobalStandard.gpt-5-mini"
 $entry = $usage | Where-Object { $_.name.value -eq $defaultUsageName }
 ```
 
@@ -233,7 +233,7 @@ If the entry exists, compute `available = limit - currentValue`.
 - If the entry is **missing**, the model/SKU is not available in this region — continue to 5c.
 - If `available < 80`, quota is insufficient — continue to 5c.
 
-Report the finding to the user (e.g., "gpt-4o-mini has 40/80 quota available — insufficient").
+Report the finding to the user (e.g., "gpt-5-mini has 40/80 quota available — insufficient").
 
 #### 5c. Find alternative chat models
 
@@ -255,7 +255,7 @@ confirmed by the model list.
 
 Use this preference order (higher is better):
 
-1. `gpt-4o-mini`
+1. `gpt-5-mini`
 2. `gpt-4.1-mini`
 3. `gpt-5-mini`
 4. `gpt-4o`

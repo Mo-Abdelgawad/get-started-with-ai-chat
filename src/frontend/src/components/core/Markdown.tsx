@@ -51,6 +51,13 @@ interface IRehypeNode {
   value?: string;
 }
 
+function preprocessSourceReferences(content: string): string {
+  return content.replace(
+    /\[Source:\s*[^\]]+\]/g,
+    (source) => `<span class="sourceReference">${source}</span>`,
+  );
+}
+
 function Hyperlink({
   node,
   children,
@@ -280,6 +287,7 @@ export function Markdown({
                     attributes: {
                       ...defaultSchema.attributes,
                       code: [["className", /^language-./]],
+                      span: [["className", "sourceReference"]],
                     },
                   },
                 ],
@@ -322,7 +330,7 @@ export function Markdown({
                 remarkParse,
               ]}
             >
-              {segment.content as string}
+              {preprocessSourceReferences(segment.content as string)}
             </ReactMarkdown>
           ) : (
             segment.content

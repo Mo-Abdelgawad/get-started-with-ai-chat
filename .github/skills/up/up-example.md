@@ -126,9 +126,9 @@ role on the subscription. RBAC check passed.
     --subscription 00000000-0000-0000-0000-000000000000 -o json
 ```
 
-Checking default model **gpt-4o-mini** (GlobalStandard, need 80 capacity)...
+Checking default model **gpt-5-mini** (GlobalStandard, need 80 capacity)...
 
-✅ `gpt-4o-mini` GlobalStandard has **148,000** available capacity in `swedencentral`
+✅ `gpt-5-mini` GlobalStandard has **148,000** available capacity in `swedencentral`
 — more than sufficient.
 
 ---
@@ -146,7 +146,7 @@ Skipped — user chose the existing environment `my-chat-2`.
 > azd env set AZURE_LOCATION swedencentral --environment my-chat-2
 ```
 
-Using default chat model (gpt-4o-mini GlobalStandard) — no model overrides needed.
+Using default chat model (gpt-5-mini GlobalStandard) — no model overrides needed.
 
 ---
 
@@ -172,7 +172,7 @@ Creating/Updating resources
   (✓) Done: Storage account: stabc123xyz (28.8s)
   (✓) Done: Application Insights: appi-abc123xyz (10.0s)
   (✓) Done: Foundry: aoai-abc123xyz (26.0s)
-  (✓) Done: Azure AI Services Model Deployment: aoai-abc123xyz/gpt-4o-mini (4.0s)
+  (✓) Done: Azure AI Services Model Deployment: aoai-abc123xyz/gpt-5-mini (4.0s)
   (✓) Done: Foundry project: aoai-abc123xyz/proj-abc123xyz (11.9s)
   (✓) Done: Container Registry: crabc123xyz (23.6s)
   (✓) Done: Container Apps Environment: containerapps-env-abc123xyz (53.7s)
@@ -214,7 +214,7 @@ Attempt 1 - HTTP 200 - App is running!
 | Environment      | `my-chat-2`                  |
 | Resource Group   | `rg-my-chat-2`               |
 | Region           | `swedencentral`              |
-| Chat Model       | `gpt-4o-mini` (`GlobalStandard`) |
+| Chat Model       | `gpt-5-mini` (`GlobalStandard`) |
 | App URL          | https://ca-api-abc123xyz.example-a1b2c3d4.swedencentral.azurecontainerapps.io |
 | Status           | ✅ PASS                       |
 

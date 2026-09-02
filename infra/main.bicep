@@ -10,9 +10,9 @@ param environmentName string
 @metadata({
   azd: {
     type: 'location'
-    // quota-validation for ai models: gpt-4o-mini
+    // quota-validation for ai models: gpt-5-mini
     usageName: [
-      'OpenAI.GlobalStandard.gpt-4o-mini,80'
+      'OpenAI.GlobalStandard.gpt-5-mini,80'
     ]
   }
 })
@@ -44,14 +44,14 @@ param principalId string = ''
 @allowed(['Microsoft', 'OpenAI'])
 param chatModelFormat string = 'OpenAI'
 @description('Name of the chat model to deploy')
-param chatModelName string = 'gpt-4o-mini'
+param chatModelName string = 'gpt-5-mini'
 @description('Name of the model deployment')
-param chatDeploymentName string = 'gpt-4o-mini'
+param chatDeploymentName string = 'gpt-5-mini'
 
 @description('Version of the chat model to deploy')
 // See version availability in this table:
 // https://learn.microsoft.com/azure/ai-services/openai/concepts/models#global-standard-model-availability
-param chatModelVersion string = '2024-07-18'
+param chatModelVersion string = '2025-08-07'
 
 @description('Sku of the chat deployment')
 param chatDeploymentSku string = 'GlobalStandard'
@@ -71,7 +71,7 @@ param embedModelName string = 'text-embedding-3-small'
 @description('Name of the embedding model deployment')
 param embeddingDeploymentName string = 'text-embedding-3-small'
 @description('Embedding model dimensionality')
-param embeddingDeploymentDimensions string = '100'
+param embeddingDeploymentDimensions string = '1536'
 
 @description('Version of the embedding model to deploy')
 // See version availability in this table:
@@ -183,7 +183,11 @@ module ai 'core/host/ai-environment.bicep' = if (empty(azureExistingAIProjectRes
 
 var searchServiceEndpoint = !useSearchService
   ? ''
-  : empty(azureExistingAIProjectResourceId) ? ai!.outputs.searchServiceEndpoint : ''
+  : !empty(searchServiceName)
+    ? 'https://${searchServiceName}.search.windows.net'
+    : empty(azureExistingAIProjectResourceId)
+      ? ai!.outputs.searchServiceEndpoint
+      : ''
 
 // If bringing an existing AI project, set up the log analytics workspace here
 module logAnalytics 'core/monitor/loganalytics.bicep' = if (!empty(azureExistingAIProjectResourceId)) {
@@ -407,6 +411,7 @@ output AZURE_AI_SEARCH_INDEX_NAME string = aiSearchIndexName
 output AZURE_AI_SEARCH_ENDPOINT string = searchServiceEndpoint
 output AZURE_AI_EMBED_DIMENSIONS string = embeddingDeploymentDimensions
 output AZURE_EXISTING_AIPROJECT_ENDPOINT string = projectEndpoint
+output AZURE_OPENAI_ENDPOINT string = replace(split(projectEndpoint, '/api/projects/')[0], '.services.ai.azure.com', '.openai.azure.com')
 output ENABLE_AZURE_MONITOR_TRACING bool = enableAzureMonitorTracing
 output AZURE_TRACING_GEN_AI_CONTENT_RECORDING_ENABLED bool = azureTracingGenAIContentRecordingEnabled
 

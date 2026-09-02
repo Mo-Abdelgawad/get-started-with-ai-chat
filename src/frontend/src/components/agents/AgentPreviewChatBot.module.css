@@ -130,6 +130,43 @@
   display: flex;
   margin: 0 16px;
   padding: 4px 0;
+  font-family: 'Montserrat', 'Segoe UI', sans-serif;
+}
+
+.copilotChatMessage *,
+.copilotChatMessage *::before,
+.copilotChatMessage *::after {
+  font-family: 'Montserrat', 'Segoe UI', sans-serif;
+}
+
+.assistantName {
+  font-family: 'Montserrat', 'Segoe UI', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: #1b5f96;
+}
+
+.referenceListRoot {
+  margin-top: 8px;
+  font-family: "Courier New", Courier, monospace;
+  color: #a9d9ff;
+}
+
+.referenceList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-family: "Courier New", Courier, monospace;
+  color: #a9d9ff;
+}
+
+.referenceItem {
+  font-family: "Courier New", Courier, monospace;
+  color: #a9d9ff;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  font-size: 12px;
+  font-weight: 500;
 }
 
 /* Transition for empty state to messages state */

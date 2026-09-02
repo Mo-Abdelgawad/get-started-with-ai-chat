@@ -36,7 +36,7 @@ services:
     host: containerapp
     docker:
       image: api_and_frontend
-      remoteBuild: true
+      remoteBuild: false
 
 pipeline:
   variables:

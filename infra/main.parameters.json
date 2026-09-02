@@ -48,19 +48,19 @@
       "value": "${USE_APPLICATION_INSIGHTS=true}"
     },
     "useSearchService": {
-      "value": "${USE_AZURE_AI_SEARCH_SERVICE=false}"
+      "value": "${USE_AZURE_AI_SEARCH_SERVICE=true}"
     },
     "chatDeploymentName": {
-      "value": "${AZURE_AI_CHAT_DEPLOYMENT_NAME=gpt-4o-mini}"
+      "value": "${AZURE_AI_CHAT_DEPLOYMENT_NAME=gpt-5-mini}"
     },
     "chatModelFormat": {
       "value": "${AZURE_AI_CHAT_MODEL_FORMAT=OpenAI}"
     },
     "chatModelName": {
-      "value": "${AZURE_AI_CHAT_MODEL_NAME=gpt-4o-mini}"
+      "value": "${AZURE_AI_CHAT_MODEL_NAME=gpt-5-mini}"
     },
     "chatModelVersion": {
-      "value": "${AZURE_AI_CHAT_MODEL_VERSION=2024-07-18}"
+      "value": "${AZURE_AI_CHAT_MODEL_VERSION=2025-08-07}"
     },
     "chatDeploymentSku": {
       "value": "${AZURE_AI_CHAT_DEPLOYMENT_SKU=GlobalStandard}"
@@ -87,7 +87,7 @@
       "value": "${AZURE_AI_EMBED_DEPLOYMENT_CAPACITY=50}"
     },
     "embeddingDeploymentDimensions": {
-      "value": "${AZURE_AI_EMBED_DIMENSIONS=100}"
+      "value": "${AZURE_AI_EMBED_DIMENSIONS=1536}"
     },
     "apiAppExists": {
       "value": "${SERVICE_API_RESOURCE_EXISTS=false}"
@@ -96,7 +96,7 @@
       "value": "${AZURE_EXISTING_AIPROJECT_RESOURCE_ID}"
     },
     "aiSearchIndexName": {
-      "value": "${AZURE_AI_SEARCH_INDEX_NAME=index_sample}"
+      "value": "${AZURE_AI_SEARCH_INDEX_NAME=qarar-citations-v1}"
     },
     "enableAzureMonitorTracing": {
       "value": "${ENABLE_AZURE_MONITOR_TRACING=false}"

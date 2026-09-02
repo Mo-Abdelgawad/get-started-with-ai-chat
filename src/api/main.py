@@ -5,20 +5,44 @@ import contextlib
 import logging
 import os
 from typing import Union
-from urllib.parse import urlparse
 
 import fastapi
 from azure.ai.projects.aio import AIProjectClient
-from azure.ai.inference.aio import ChatCompletionsClient, EmbeddingsClient
 from azure.identity import AzureDeveloperCliCredential, ManagedIdentityCredential
 from dotenv import load_dotenv
 from fastapi.staticfiles import StaticFiles
+from openai import AsyncAzureOpenAI
 
 from .search_index_manager import SearchIndexManager
 from .util import get_logger
 
 logger = None
 enable_trace = False
+
+
+EMBEDDING_DIMENSIONS_BY_MODEL = {
+    "text-embedding-3-small": 1536,
+    "text-embedding-3-large": 3072,
+    "text-embedding-ada-002": 1536,
+}
+
+
+def resolve_embedding_dimensions(model_name: str, configured_dimensions: str | None) -> int:
+    """Return the configured dimensions unless the caller explicitly overrides a known model default."""
+    if configured_dimensions is None or configured_dimensions == "":
+        return EMBEDDING_DIMENSIONS_BY_MODEL.get(model_name, 1536)
+    return int(configured_dimensions)
+
+
+def build_openai_client(azure_openai_endpoint: str, credential):
+    """Build the Azure OpenAI client using the Azure endpoint form required by the SDK."""
+    normalized_endpoint = azure_openai_endpoint.rstrip("/")
+    return AsyncAzureOpenAI(
+        api_version=os.getenv("AZURE_OPENAI_API_VERSION", "2024-10-21"),
+        azure_endpoint=normalized_endpoint,
+        azure_ad_token_provider=lambda: credential.get_token("https://cognitiveservices.azure.com/.default").token,
+    )
+
 
 @contextlib.asynccontextmanager
 async def lifespan(app: fastapi.FastAPI):
@@ -58,41 +82,38 @@ async def lifespan(app: fastapi.FastAPI):
             configure_azure_monitor(connection_string=application_insights_connection_string)
 
 
-    # Project endpoint has the form:   https://your-ai-services-account-name.services.ai.azure.com/api/projects/your-project-name
-    # Inference endpoint has the form: https://your-ai-services-account-name.services.ai.azure.com/models
-    # Strip the "/api/projects/your-project-name" part and replace with "/models":
-    inference_endpoint = f"https://{urlparse(endpoint).netloc}/models"
+    azure_openai_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+    if not azure_openai_endpoint:
+        project_endpoint = os.environ.get("AZURE_EXISTING_AIPROJECT_ENDPOINT", "")
+        if project_endpoint:
+            azure_openai_endpoint = project_endpoint.split("/api/projects/")[0].replace(".services.ai.azure.com", ".openai.azure.com")
+        else:
+            raise RuntimeError("AZURE_OPENAI_ENDPOINT is not configured and could not be derived from AZURE_EXISTING_AIPROJECT_ENDPOINT.")
 
-    chat =  ChatCompletionsClient(
-        endpoint=inference_endpoint,
-        credential=azure_credential,
-        credential_scopes=["https://ai.azure.com/.default"],
-    )
-    embed =  EmbeddingsClient(
-        endpoint=inference_endpoint,
-        credential=azure_credential,
-        credential_scopes=["https://ai.azure.com/.default"],
-    )
+    openai_client = build_openai_client(azure_openai_endpoint, azure_credential)
+
+    chat = openai_client
+    embed = openai_client
 
     endpoint = os.environ.get('AZURE_AI_SEARCH_ENDPOINT')
     search_index_manager = None
-    embed_dimensions = None
-    if os.getenv('AZURE_AI_EMBED_DIMENSIONS'):
-        embed_dimensions = int(os.getenv('AZURE_AI_EMBED_DIMENSIONS'))
-        
-    if endpoint and os.getenv('AZURE_AI_SEARCH_INDEX_NAME') and os.getenv('AZURE_AI_EMBED_DEPLOYMENT_NAME'):
+    embed_model_name = os.getenv('AZURE_AI_EMBED_DEPLOYMENT_NAME')
+    configured_embed_dimensions = os.getenv('AZURE_AI_EMBED_DIMENSIONS')
+    embed_dimensions = resolve_embedding_dimensions(embed_model_name or "text-embedding-3-small", configured_embed_dimensions)
+
+    if endpoint and os.getenv('AZURE_AI_SEARCH_INDEX_NAME') and embed_model_name:
         search_index_manager = SearchIndexManager(
             endpoint = endpoint,
             credential = azure_credential,
             index_name = os.getenv('AZURE_AI_SEARCH_INDEX_NAME'),
             dimensions = embed_dimensions,
-            model = os.getenv('AZURE_AI_EMBED_DEPLOYMENT_NAME'),
+            model = embed_model_name,
             embeddings_client=embed
         )
         # Create index and upload the documents only if index does not exist.
         logger.info(f"Creating index {os.getenv('AZURE_AI_SEARCH_INDEX_NAME')}.")
         await search_index_manager.ensure_index_created(
-            vector_index_dimensions=embed_dimensions if embed_dimensions else 100)
+            vector_index_dimensions=embed_dimensions)
     else:
         logger.info("The RAG search will not be used.")
 

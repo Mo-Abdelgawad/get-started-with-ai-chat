@@ -65,6 +65,10 @@ var env = [
     name: 'AZURE_EXISTING_AIPROJECT_ENDPOINT'
     value: projectEndpoint
   }
+  {
+    name: 'AZURE_OPENAI_ENDPOINT'
+    value: replace(split(projectEndpoint, '/api/projects/')[0], '.services.ai.azure.com', '.openai.azure.com')
+  }
 ]
 
 

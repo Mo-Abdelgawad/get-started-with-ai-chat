@@ -1,13 +1,7 @@
 import { ReactNode, useState, useMemo } from "react";
-import {
-  Body1,
-  Button,
-  Caption1,
-  Title2,
-} from "@fluentui/react-components";
+import { Button } from "@fluentui/react-components";
 import { ChatRegular, MoreHorizontalRegular } from "@fluentui/react-icons";
 
-import { AgentIcon } from "./AgentIcon";
 import { SettingsPanel } from "../core/SettingsPanel";
 import { AgentPreviewChatBot } from "./AgentPreviewChatBot";
 import { MenuButton } from "../core/MenuButton/MenuButton";
@@ -348,18 +342,6 @@ export function AgentPreview({ agentDetails }: IAgentPreviewProps): ReactNode {
   return (
     <div className={styles.container}>
       <div className={styles.topBar}>
-        <div className={styles.leftSection}>
-          {messageList.length > 0 && (
-            <>
-              <AgentIcon
-                alt=""
-                iconClassName={styles.agentIcon}
-                iconName={agentDetails.metadata?.logo}
-              />
-              <Body1 className={styles.agentName}>{agentDetails.name}</Body1>
-            </>
-          )}
-        </div>
         <div className={styles.rightSection}>
           {" "}
           <Button
@@ -383,15 +365,14 @@ export function AgentPreview({ agentDetails }: IAgentPreviewProps): ReactNode {
       <div className={styles.content}>          <>
             {messageList.length === 0 && (
               <div className={styles.emptyChatContainer}>
-                <AgentIcon
-                  alt=""
-                  iconClassName={styles.emptyStateAgentIcon}
-                  iconName={agentDetails.metadata?.logo}
+                <img
+                  alt="QARAR AI logo"
+                  className={styles.emptyStateAgentIcon}
+                  src="/static/assets/qarar-ai-brandmark.png"
                 />
-                <Caption1 className={styles.agentName}>
-                  {agentDetails.name}
-                </Caption1>
-                <Title2>How can I help you today?</Title2>
+                <div className={styles.brandSubtitle}>
+                  QARAR AI - Market and Decision Intelligence
+                </div>
               </div>
             )}
             <AgentPreviewChatBot

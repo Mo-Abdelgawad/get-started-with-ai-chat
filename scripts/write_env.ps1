@@ -19,6 +19,8 @@ $azureTracingGenAIContentRecordingEnabled = azd env get-value AZURE_TRACING_GEN_
 
 Add-Content -Path $envFilePath -Value "AZURE_EXISTING_AIPROJECT_RESOURCE_ID=$aiProjectResourceId"
 Add-Content -Path $envFilePath -Value "AZURE_EXISTING_AIPROJECT_ENDPOINT=$aiProjectEndpoint"
+$openAiEndpoint = if ($aiProjectEndpoint) { $aiProjectEndpoint.Split('/api/projects/')[0].Replace('.services.ai.azure.com', '.openai.azure.com') } else { '' }
+Add-Content -Path $envFilePath -Value "AZURE_OPENAI_ENDPOINT=$openAiEndpoint"
 Add-Content -Path $envFilePath -Value "AZURE_AI_CHAT_DEPLOYMENT_NAME=$azureAiChatDeploymentName"
 Add-Content -Path $envFilePath -Value "AZURE_TENANT_ID=$azureTenantId"
 Add-Content -Path $envFilePath -Value "AZURE_AI_EMBED_DEPLOYMENT_NAME=$azureAIEmbedDeploymentName"

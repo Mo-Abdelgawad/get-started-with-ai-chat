@@ -65,7 +65,7 @@ azd env set AZURE_AI_CHAT_MODEL_FORMAT Microsoft
 Change the chat model name:
 
 ```shell
-azd env set AZURE_AI_CHAT_MODEL_NAME gpt-4o-mini
+azd env set AZURE_AI_CHAT_MODEL_NAME gpt-5-mini
 ```
 
 Set the version of the chat model:

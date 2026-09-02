@@ -1,0 +1,47 @@
+[
+  {
+    "document_id": "doc-0001",
+    "title": "Driving licensing procedures",
+    "source_file": "driver_license_policy.pdf",
+    "sector": "driving_licensing",
+    "region": "national",
+    "document_type": "pdf",
+    "language": "ar",
+    "source_owner": "Ministry of Transport",
+    "publish_date": "2026-01-15",
+    "tags": ["driver license", "renewal", "permit rules"],
+    "confidential_level": "internal",
+    "page_count": 8,
+    "ingestion_status": "processed"
+  },
+  {
+    "document_id": "doc-0002",
+    "title": "Education access report",
+    "source_file": "education_access_aleppo.docx",
+    "sector": "education",
+    "region": "Aleppo",
+    "document_type": "word",
+    "language": "en",
+    "source_owner": "Education Directorate",
+    "publish_date": "2026-02-10",
+    "tags": ["schools", "enrollment", "district access"],
+    "confidential_level": "internal",
+    "page_count": 12,
+    "ingestion_status": "processed"
+  },
+  {
+    "document_id": "doc-0003",
+    "title": "Financial service coverage",
+    "source_file": "financial_coverage.xlsx",
+    "sector": "finance",
+    "region": "Damascus",
+    "document_type": "excel",
+    "language": "en",
+    "source_owner": "Central Bank",
+    "publish_date": "2026-03-08",
+    "tags": ["banking", "branch coverage", "credit access"],
+    "confidential_level": "restricted",
+    "page_count": 1,
+    "ingestion_status": "processed"
+  }
+]

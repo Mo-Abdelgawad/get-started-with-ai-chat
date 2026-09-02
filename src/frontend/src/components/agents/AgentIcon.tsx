@@ -21,16 +21,16 @@ export interface IAgentIconProps {
 }
 
 export function AgentIcon({
-  iconName = "Avatar_Default.svg",
+  iconName = "qarar-ai-brandmark.png",
   iconClassName,
-  alt = "",
+  alt = "QARAR AI logo",
 }: IAgentIconProps): ReactNode {
   return (
     <div className={styles.iconContainer}>
       <img
         alt={alt}
         className={iconClassName ?? styles.icon}
-        src={`static/assets/template-images/${iconName}`}
+        src={iconName.startsWith("/") || iconName.startsWith("http") ? iconName : `/static/assets/${iconName}`}
       />
     </div>
   );

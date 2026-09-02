@@ -6,7 +6,7 @@ The Retrieval-Augmented Generation (RAG) feature helps improve the responses fro
 This RAG feature is optional and is disabled by default. If you prefer to use it, simply set the environment variable `USE_AZURE_AI_SEARCH_SERVICE` to `true`. Doing so will also trigger the deployment of Azure AI Search resources.
 
 ## How does RAG work in this application?
-In our provided example, the application includes a sample dataset containing information about hiking products. This data was split into sentences, and each sentence was transformed into numerical representations called embeddings. These embeddings were created using OpenAI's `text-embedding-3-small` model with `dimensions=100`. The resulting embeddings file (`embeddings.csv`) is located in the `api/data` folder.
+In our provided example, the application includes a sample dataset containing information about hiking products. This data was split into sentences, and each sentence was transformed into numerical representations called embeddings. These embeddings were created using OpenAI's `text-embedding-3-small` model with `dimensions=1536`. The resulting embeddings file (`embeddings.csv`) is located in the `api/data` folder.
 
 When you ask a question, the application:
  
@@ -23,7 +23,7 @@ search_index_manager = SearchIndexManager (
     endpoint=self.search_endpoint,
     credential=your_credentials,
     index_name=index_name,
-    dimensions=100,
+    dimensions=1536,
     model="text-embedding-3-small",
     embeddings_client=embedding_client,
 )
